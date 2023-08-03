@@ -78,7 +78,16 @@ We create a Gaussian outcome composed of the indicator for microbial clique, cov
 set.seed(45667)
 outcome <-  1 * three_clique  + covariates %*% rep(0.1, 4) + rnorm(n, 0, 0.5)
 ```
-This outcome is already supplied in the dataset. However, note that the effect size of the `three_clique` is set at `1`. Further, note that, individually, the relative abundances of the three Taxa are _not_ significantly associated with the outcome. Only through the three-ordered clique, there is a significant statistical association.  
+This outcome is already supplied in the dataset. However, note that the effect size of the `three_clique` is set at `1`. Further, note that individually `(Taxa + cov1 + cov2 + cov3 + cov4)`, the relative abundances of the three Taxa are _not_ significantly associated with the outcome. Only through the three-ordered clique, is there a significant statistical association.  
+
+```{}
+             Estimate Std. Error t value Pr(>|t|)
+Taxa.1      -0.009965   0.006567  -1.517 0.129816    
+Taxa.3       0.007614   0.006652   1.145  0.25297    
+Taxa.11      0.008184   0.006479   1.263 0.207165    
+clique        1.24607    0.06482  19.223  < 2e-16 ***
+
+```
 
 ## The aim of the MiCA algorithm
 
