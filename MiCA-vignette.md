@@ -181,20 +181,21 @@ clique.finder <- function(exposures, outcome, iterations, validation, seed.value
 Finally, run the `function` called `clique.finder`. Below we discuss each argument for this function and what they entail.
 
 ```{}
-clique.finder(exposures = paste0("Taxa.", seq(1,60)), outcome = "outcome",  iterations = 500, validation = 0.4, 
+clique.finder(exposures = paste0("Taxa.", seq(1,60)), outcome = "outcome",  iterations = 1500, validation = 0.4, 
               seed.value = 1234, n.bootstrap = 200, min.prevalence = 0.05, min.stability = 0.25, data = data.simulated)
 ```
 
 1. `exposures`: a vector of all possible Taxa names (among which one intends to find the combinations)
 2. `outcome`: name of the outcome variable
-3. `iterations`: the number of repeated holdouts (should ideally be more than 100)
-4. `validation`: the proportion of the dataset set aside for validation at each repeated holdout iteration 
-5. `seed.value`: 
-6. `n.bootstrap`:
-7. `min.prevalence`:
-8. `min.stability`:
+3. `iterations`: the number of repeated holdouts (should be more than 100)
+4. `validation`: the proportion of the dataset which is set aside for validation at each repeated holdout iteration 
+5. `seed.value`: random initial seed value for partitioning the dataset
+6. `n.bootstrap`: the number of bootstrap iterations employed at each of the repeated holdouts on the training dataset (should be more than 100)
+7. `min.prevalence`: the minimum proportion (lower bound) of the sample that has the clique. Here we chose `5%` as the lower bound of the prevalence. 
+8. `min.stability`: the stability implies the proportion of times the clique was recovered across bootstrap replicates. The `min.stability` is the lower bound. Here we chose `25%` as the lower bound.
 9. `data`: name of the dataset
 
+Note that, lowering the values of `min.prevalence` and `min.stability` finds more combinations of Taxa; however, due to the implementation of repeated holdout technique, lowering these bounds do not have any significant effect on the most stable combinations.
 
 
 
@@ -206,4 +207,4 @@ clique.finder(exposures = paste0("Taxa.", seq(1,60)), outcome = "outcome",  iter
 
 ### Acknowledgments
 
-This method was developed at the Dept. of Environmental Medicine and Public Health, Icahn School of Medicine at Mount Sinai, NYC with funding and support from the National Institute of Environmental Health Sciences (K99ES032884, P30ES023515, and U2C ES026555-01).
+This method was developed at the Dept. of Environmental Medicine and Public Health, Icahn School of Medicine at Mount Sinai, NYC, with funding and support from the National Institute of Environmental Health Sciences (K99ES032884, P30ES023515, and U2C ES026555-01).
