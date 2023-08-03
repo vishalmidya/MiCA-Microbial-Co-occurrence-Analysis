@@ -18,9 +18,9 @@ Find the instructions [here](https://github.com/sumbose/iRF/tree/master) to inst
 
 ## Creating a 3<sup>rd</sup> order microbial clique and an outcome
 
-1. Run the following chuck of functions:
+1. __Run the following chuck of functions:__
 
-`require(kableExtra)`
+`require(mvtnorm)`
 
 ```{}
 make.SIGMA <- function(rho,dimension){
@@ -48,13 +48,35 @@ make.X0 <- function(n, rho, p0){
 }
 ```
 
-2. Next, we create 4 covariates
+2. __Next, we create four covariates that are moderately correlated to each other__
 
 ```{}
 n <- dim(sample.data.simulated)[1]
 set.seed(12456)
 covariates <- make.X0(n,0.1,4)
 ```
+The set of four covariates is already supplied in the dataset.  
+
+3. __Create a 3<sup>rd</sup> order microbial clique__
+
+Without loss of generality, we choose `Taxa.1`, `Taxa.3`, and `Taxa.11` to form a clique. The clique is present only in those individuals where (1) the relative abundance of `Taxa.1` is _less_ than its total sample median, (2) the relative abundance of `Taxa.3` is _greater_ than its total sample median, and lastly, (3) the relative abundance of `Taxa.11` is _greater_ than its total sample median. In terms of code,
+
+```{}
+three_clique <- as.numeric(data.simulated$Taxa.1 <= quantile(data.simulated$Taxa.1, 0.5)
+                             & data.simulated$Taxa.3 >= quantile(data.simulated$Taxa.3, 0.5)
+                                & data.simulated$Taxa.11 >= quantile(data.simulated$Taxa.11, 0.5))
+```
+
+4. __Create the outcome__
+
+We create a Gaussian outcome composed of the indicator for microbial clique, covariates, and random Gaussian error.
+
+```{}
+set.seed(45667)
+outcome <-  1 * three_clique  + covariates %*% rep(0.1, 4) + rnorm(n, 0, 0.5)
+```
+This outcome is already supplied in the dataset. However, note that the effect size of the `three_clique` is set at `1`.
+
 
 
 
