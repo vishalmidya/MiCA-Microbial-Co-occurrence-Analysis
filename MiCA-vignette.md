@@ -221,7 +221,7 @@ Here is the result of the top 10 combinations obtained from the simulated datase
             Taxa.11_Taxa.33  2.0443
              Taxa.17_Taxa.3  2.0303
 ```
-The first column, `Var1`, denotes all possible combinations picked up by the algorithm, and the `Freq` denotes the percentage of their occurrence over all possible detected combinations and all bootstrap and repeated holdout combinations. The total number of detected combinations is around `400`. Note the top three combinations, `Taxa.11_Taxa.3`, `Taxa.1_Taxa.11`, and `Taxa.1_Taxa.3` occurred the most (more than 10%) among all possible detected combinations. Moreover, a three-ordered `Taxa.1_Taxa.11_Taxa.3` combination was among the most occurring combinations. 
+The first column, `Var1`, denotes all possible combinations picked up by the algorithm, and the `Freq` denotes the percentage of their occurrence over all possible detected combinations and all bootstrap and repeated holdout combinations. The total number of detected combinations is around `400`. Note the top three combinations, `Taxa.11_Taxa.3`, `Taxa.1_Taxa.11`, and `Taxa.1_Taxa.3` occurred the most (more than 10%) among all possible detected combinations. Moreover, a three-ordered `Taxa.1_Taxa.11_Taxa.3` combination was among the most occurring combinations. As the sample size increases, the frequency of true higher-ordered combinations also increase. Although this is very subjective, a good practice is to choose the top (first three or first five) most frequently occurring combinations as long as they form a clique. 
 
 
 
