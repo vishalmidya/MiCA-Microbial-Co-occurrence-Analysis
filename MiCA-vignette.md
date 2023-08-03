@@ -99,7 +99,6 @@ Note that, there are a total of `1770` two-ordered, and `34220` three-ordered co
 
 ## Finding the optimal combination of Taxa
 
-
 Run the following function that finds the most frequently occurring combinations of Taxa:
 
 ```{}
@@ -223,10 +222,84 @@ Here is the result of the top 10 combinations obtained from the simulated datase
 ```
 The first column, `Var1`, denotes all possible combinations picked up by the algorithm, and the `Freq` denotes the percentage of their occurrence over all possible detected combinations and all bootstrap and repeated holdout combinations. The total number of detected combinations is around `400`. Note the top three combinations, `Taxa.11_Taxa.3`, `Taxa.1_Taxa.11`, and `Taxa.1_Taxa.3` occurred the most (more than 10%) among all possible detected combinations. Moreover, a three-ordered `Taxa.1_Taxa.11_Taxa.3` combination was among the most occurring combinations. As the sample size increases, the frequency of the true higher-ordered combinations also increases. Although this is very subjective, a good practice is to choose the top (first three or first five) most frequently occurring combinations as long as they form a clique. 
 
+Although we found the microbial combination, how it is associated with the outcome or the directionality is unknown. In the next stage, once the combination of the Taxa is found, we estimate the thresholds of the microbial clique and its association with the outcome. 
+
 ## Estimating the thresholds of the microbial clique and its association with the outcome
 
+Run the following function that finds the thresholds for relative abundances of `Taxa.1`, `Taxa.3`, and `Taxa.11`. Each Taxa's directionality is chosen based on its univariate association. The following code _should only be used_ based on the output from the `clique.finder` function. 
 
+```{}
+clique.tba <- function(clique.names, outcome, covariates, grid.quantile, proportion,  data, family = "gaussian"){
+  len <- length(clique.names)
+  if(len < 2){
+    stop("Need at least two exposures to form a meaningful clique") 
+  }
+  n <- dim(data)[1]
+  if(n == 0){
+    stop("Please provide a dataset in data.frame format") 
+  }
+  beta.data <- data.frame(Exposure = rep(NA_character_, len), effect_size = rep(NA_real_, len))
+  beta.data$Exposure <- clique.names
+  for(i in 1:len){
+    g.out <- data[,outcome]
+    if(family == "gaussian"){
+      fit <- summary(lm(g.out ~ as.matrix(data[, c(beta.data$Exposure[i], covariates)]), data = data))  
+    }
+    if(family == "binomial"){
+      fit <- summary(glm(g.out ~ as.matrix(data[, c(beta.data$Exposure[i], covariates)]), data = data , family = family))  
+    }
+    beta.data$effect_size[i] <- fit$coefficients[2,1]
+  }
+  x <- grid.quantile
+  if(length(grid.quantile) == 1){
+    stop("Please increase the number of possible thresholds")
+  }
+  d1 <- do.call(expand.grid, replicate(len, x, simplify = F))
+  d1$proportion <- rep(NA_real_, dim(d1)[1])
+  d1$effect_size <- rep(NA_real_, dim(d1)[1])
+  d1$se <- rep(NA_real_, dim(d1)[1])
+  d1$pval <- rep(NA_real_, dim(d1)[1])
+  for(i in 1:nrow(d1)){
+    mat.len <- as.data.frame(matrix(NA_real_, ncol = len, nrow = nrow(data)))
+    for(j in 1:len){
+      if(sign(beta.data$effect_size)[j] < 0){
+        mat.len[,j] <- as.numeric(data[,clique.names[j]] <= quantile(data[,clique.names[j]], d1[i,j] )) 
+      }else{
+        mat.len[,j] <- as.numeric(data[,clique.names[j]] >= quantile(data[,clique.names[j]], d1[i,j] ))
+      }
+    }
+    clique.int <- apply(mat.len, 1, function(x){prod(x)})
+    
+    if(sum(clique.int)!= 0){
+      
+      d1$proportion[i] <- as.numeric(table(clique.int)/sum(table(clique.int)))[2]
+      
+      if(d1$proportion[i] >= proportion){
+        
+        data$clique.int <- clique.int
+        g.out <- data[,outcome]
+        s <- summary(lm(g.out ~ as.matrix(data[, c("clique.int", covariates)]), data = data))
+        d1$effect_size[i] = s$coefficients[2,1]
+        d1$se[i] = s$coefficients[2,2]
+        d1$pval[i] = s$coefficients[2,4]
+      }
+    }
+  }
+  d2 <- na.omit(d1)
+  if(dim(d2)[1] == 0){
+    stop("Please decrease the proportion, but keep it more than 5% for reliability")
+  }
+  d2 <- d2[d2$proportion > 0.1,]
+  d2 <- d2[order(abs(d2$effect_size), decreasing = T),]
+  return(d2[1,])
+}
+```
+Finally, run the `function` called `clique.tba`. Below we discuss each argument for this function and what they entail.
 
+```{}
+clique.tba(clique.names = c("Taxa.1", "Taxa.3", "Taxa.11"), outcome= "outcome", covariates = paste0("cov",seq(1,4)),
+            grid.quantile = seq(0.2, 0.8, 0.1), proportion = 0.1, family = "gaussian", data = data.simulated)
+```
 
 
 
