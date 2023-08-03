@@ -78,7 +78,7 @@ We create a Gaussian outcome composed of the indicator for microbial clique, cov
 set.seed(45667)
 outcome <-  1 * three_clique  + covariates %*% rep(0.1, 4) + rnorm(n, 0, 0.5)
 ```
-This outcome is already supplied in the dataset. However, note that the effect size of the `three_clique` is set at `1`. Further, note that individually `(Taxa + cov1 + cov2 + cov3 + cov4)`, the relative abundances of the three Taxa are _not_ significantly associated with the outcome. Only through the three-ordered clique, is there a significant statistical association.  
+This outcome is already supplied in the dataset. However, note that the effect size of the `three_clique` is set at `1`. Further, note that individually `(outcome ~ Taxa + cov1 + cov2 + cov3 + cov4)`, the relative abundances of the three Taxa are _not_ significantly associated with the outcome. Only through the three-ordered clique, is there a significant statistical association.  
 
 ```{}
              Estimate Std. Error t value Pr(>|t|)
