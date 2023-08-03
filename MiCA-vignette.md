@@ -78,7 +78,7 @@ We create a Gaussian outcome composed of the indicator for microbial clique, cov
 set.seed(45667)
 outcome <-  1 * three_clique  + covariates %*% rep(0.1, 4) + rnorm(n, 0, 0.5)
 ```
-This outcome is already supplied in the dataset. However, note that the effect size of the `three_clique` is set at `1`.
+This outcome is already supplied in the dataset. However, note that the effect size of the `three_clique` is set at `1`. Further, note that, individually, the relative abundances of the three Taxa are _not_ significantly associated with the outcome. Only through the three-ordered clique, there is a significant statistical association.  
 
 ## The aim of the MiCA algorithm
 
@@ -195,7 +195,26 @@ clique.finder(exposures = paste0("Taxa.", seq(1,60)), outcome = "outcome",  iter
 8. `min.stability`: the stability implies the proportion of times the clique was recovered across bootstrap replicates. The `min.stability` is the lower bound. Here we chose `25%` as the lower bound.
 9. `data`: name of the dataset
 
-Note that, lowering the values of `min.prevalence` and `min.stability` finds more combinations of Taxa; however, due to the implementation of the repeated holdout technique, lowering these bounds do not have any significant effect on the most stable combinations. In this example, we used `1500` repeated holdouts. One can utilize the [parallel R package](https://www.rdocumentation.org/packages/parallel/versions/3.6.2) for fast parallel computation. 
+Note that, lowering the values of `min.prevalence` and `min.stability` finds more combinations of Taxa; however, due to the implementation of the repeated holdout technique, lowering these bounds does not have any significant effect on the most stable combinations. In this example, we used `1500` repeated holdouts. One can utilize the [parallel R package](https://www.rdocumentation.org/packages/parallel/versions/3.6.2) for fast parallel computation. 
+
+Here is the result of the top 10 combinations obtained from the simulated dataset
+
+```{}
+                       Var1    Freq
+             Taxa.11_Taxa.3 11.9250
+             Taxa.1_Taxa.11 11.5353
+              Taxa.1_Taxa.3 10.2261
+      Taxa.1_Taxa.11_Taxa.3  3.1224
+            Taxa.11_Taxa.17  3.1154
+            Taxa.11_Taxa.41  2.6534
+             Taxa.1_Taxa.41  2.6510
+             Taxa.1_Taxa.17  2.6440
+            Taxa.11_Taxa.33  2.0443
+             Taxa.17_Taxa.3  2.0303
+```
+The first column, `Var1`, denotes all possible combinations picked up by the algorithm, and the `Freq` denotes the percentage of their occurrence over all possible detected combinations and all bootstrap and repeated holdout combinations. Note the top three combinations, `Taxa.11_Taxa.3`, `Taxa.1_Taxa.11`, and `Taxa.1_Taxa.3` 
+
+
 
 
 
