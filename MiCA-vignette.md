@@ -226,7 +226,7 @@ Although we found the microbial combination, how it is associated with the outco
 
 ## Estimating the thresholds of the microbial clique and its association with the outcome
 
-Run the following function that finds the thresholds for relative abundances of `Taxa.1`, `Taxa.3`, and `Taxa.11`. Each Taxa's directionality is chosen based on its univariate association. The following code _should only be used_ based on the output from the `clique.finder` function. 
+Run the following function that finds the thresholds for relative abundances of `Taxa.1`, `Taxa.3`, and `Taxa.11`. Each Taxa's directionality is chosen based on its univariate association. The following code _should only be used_ based on the output from the `clique.finder` function; else there is a possibility of overfitting. 
 
 ```{}
 clique.tba <- function(clique.names, outcome, covariates, grid.quantile, min.prevalence,  data, family = "gaussian"){
@@ -261,7 +261,7 @@ clique.tba <- function(clique.names, outcome, covariates, grid.quantile, min.pre
   d1$min.prevalence <- rep(NA_real_, dim(d1)[1])
   d1$effect_size <- rep(NA_real_, dim(d1)[1])
   d1$se <- rep(NA_real_, dim(d1)[1])
-  d1$pval <- rep(NA_real_, dim(d1)[1])
+  d1$pvalue <- rep(NA_real_, dim(d1)[1])
   for(i in 1:nrow(d1)){
     mat.len <- as.data.frame(matrix(NA_real_, ncol = len, nrow = nrow(data)))
     for(j in 1:len){
@@ -284,7 +284,7 @@ clique.tba <- function(clique.names, outcome, covariates, grid.quantile, min.pre
         s <- summary(lm(g.out ~ as.matrix(data[, c("clique.int", covariates)]), data = data))
         d1$effect_size[i] = s$coefficients[2,1]
         d1$se[i] = s$coefficients[2,2]
-        d1$pval[i] = s$coefficients[2,4]
+        d1$pvalue[i] = s$coefficients[2,4]
       }
     }
   }
@@ -310,6 +310,15 @@ clique.tba(clique.names = c("Taxa.1", "Taxa.3", "Taxa.11"), outcome= "outcome", 
 5. `min.prevalence`: the minimum proportion (lower bound) of the sample that has the clique. Here we chose `10%` as the lower bound of the prevalence. 
 6. `family`: choice of `glm` family of distributions
 7. `data`: name of the dataset
+
+I'm sharing below the final output from the simulated example.
+
+```{}
+    Var1 Var2 Var3 min.prevalence effect_size         se       pvalue
+     0.5  0.5  0.5      0.1300813    1.246074 0.06482274 1.150153e-61
+```
+
+The `Var1`, `Var2`, and `Var3` denotes the estimated thresholds for `Taxa.1`, `Taxa.3`, and `Taxa.11`, respectively. The recovered estimated effect size is `1.2`. 
 
 
 ### References
