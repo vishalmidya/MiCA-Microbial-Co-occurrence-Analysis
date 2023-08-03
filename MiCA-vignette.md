@@ -187,7 +187,15 @@ clique.finder(exposures = paste0("Taxa.", seq(1,60)), outcome = "outcome",  iter
 
 1. `exposures`: a vector of all possible Taxa names (among which one intends to find the combinations)
 2. `outcome`: name of the outcome variable
-3. `iterations`
+3. `iterations`: the number of repeated holdouts (should ideally be more than 100)
+4. `validation`: the proportion of the dataset set aside for validation at each repeated holdout iteration 
+5. `seed.value`: 
+6. `n.bootstrap`:
+7. `min.prevalence`:
+8. `min.stability`:
+9. `data`: name of the dataset
+
+
 
 
 ### References
@@ -195,3 +203,7 @@ clique.finder(exposures = paste0("Taxa.", seq(1,60)), outcome = "outcome",  iter
 1. Basu, S.; Kumbier, K.; Brown, J. B.; Yu, B. Iterative Random Forests to Discover Predictive and Stable High-Order Interactions. Proc. Natl. Acad. Sci. 2018, 115 (8), 1943–1948.
 2. Midya V, Lane JM, Gennings C, Torres-Olascoaga LA, Wright RO, Arora M, Tellez-Rojo MM, Eggers S. Prenatal Pb exposure is associated with reduced abundance of beneficial gut microbial cliques in late childhood: an investigation using Microbial Co-occurrence Analysis (MiCA). medRxiv. 2023 May. doi: https://doi.org/10.1101/2023.05.18.23290127.
 
+
+### Acknowledgments
+
+This method was developed at the Dept. of Environmental Medicine and Public Health, Icahn School of Medicine at Mount Sinai, NYC with funding and support from the National Institute of Environmental Health Sciences (K99ES032884, P30ES023515, and U2C ES026555-01).
