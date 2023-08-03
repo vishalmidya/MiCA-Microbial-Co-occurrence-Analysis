@@ -181,7 +181,7 @@ clique.finder <- function(exposures, outcome, iterations, validation, seed.value
 Finally, run the `function` called `clique.finder`. Below we discuss each argument for this function and what they entail.
 
 ```{}
-clique.finder(exposures = paste0("Taxa.", seq(1,60)), outcome = "outcome",  iterations = 1500, validation = 0.4, 
+clique.finder(exposures = paste0("Taxa.", seq(1,60)), outcome = "outcome",  iterations = 500, validation = 0.4, 
               seed.value = 1234, n.bootstrap = 200, min.prevalence = 0.05, min.stability = 0.25, data = data.simulated)
 ```
 
@@ -195,7 +195,7 @@ clique.finder(exposures = paste0("Taxa.", seq(1,60)), outcome = "outcome",  iter
 8. `min.stability`: the stability implies the proportion of times the clique was recovered across bootstrap replicates. The `min.stability` is the lower bound. Here we chose `25%` as the lower bound.
 9. `data`: name of the dataset
 
-Note that, lowering the values of `min.prevalence` and `min.stability` finds more combinations of Taxa; however, due to the implementation of repeated holdout technique, lowering these bounds do not have any significant effect on the most stable combinations.
+Note that, lowering the values of `min.prevalence` and `min.stability` finds more combinations of Taxa; however, due to the implementation of the repeated holdout technique, lowering these bounds do not have any significant effect on the most stable combinations. In this example, we used `1500` repeated holdouts. One can utilize the [parallel R package](https://www.rdocumentation.org/packages/parallel/versions/3.6.2) for fast parallel computation. 
 
 
 
