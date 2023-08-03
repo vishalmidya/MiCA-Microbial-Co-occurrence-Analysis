@@ -318,8 +318,7 @@ I'm sharing below the final output from the simulated example.
      0.5  0.5  0.5      0.1300813    1.246074 0.06482274 1.150153e-61
 ```
 
-The `Var1`, `Var2`, and `Var3` denotes the estimated thresholds for `Taxa.1`, `Taxa.3`, and `Taxa.11`, respectively. The recovered estimated effect size is `1.2`. 
-
+The `Var1`, `Var2`, and `Var3` denotes the estimated thresholds for `Taxa.1`, `Taxa.3`, and `Taxa.11`, respectively. The recovered estimated effect size is `1.2`, and the estimated prevalence of this micrbial clique is almost `13%`.
 
 ### References
 
