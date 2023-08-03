@@ -203,7 +203,7 @@ clique.finder(exposures = paste0("Taxa.", seq(1,60)), outcome = "outcome",  iter
 8. `min.stability`: the stability implies the proportion of times the clique was recovered across bootstrap replicates. The `min.stability` is the lower bound. Here we chose `25%` as the lower bound.
 9. `data`: name of the dataset
 
-Note that, lowering the values of `min.prevalence` and `min.stability` finds more combinations of Taxa; however, due to the implementation of the repeated holdout technique, lowering these bounds does not have any significant effect on the most stable combinations. In this example, we used `1500` repeated holdouts. One can utilize the [parallel R package](https://www.rdocumentation.org/packages/parallel/versions/3.6.2) for fast parallel computation. 
+Note that lowering the values of `min.prevalence` and `min.stability` finds more combinations of Taxa; however, due to the implementation of the repeated holdout technique, lowering these bounds does not significantly affect the most stable combinations. In this example, we used `1500` repeated holdouts. One can utilize the [parallel R package](https://www.rdocumentation.org/packages/parallel/versions/3.6.2) for fast parallel computation. The same code can be used for binary outcomes as well.
 
 Here is the result of the top 10 combinations obtained from the simulated dataset
 
@@ -229,7 +229,7 @@ Although we found the microbial combination, how it is associated with the outco
 Run the following function that finds the thresholds for relative abundances of `Taxa.1`, `Taxa.3`, and `Taxa.11`. Each Taxa's directionality is chosen based on its univariate association. The following code _should only be used_ based on the output from the `clique.finder` function. 
 
 ```{}
-clique.tba <- function(clique.names, outcome, covariates, grid.quantile, proportion,  data, family = "gaussian"){
+clique.tba <- function(clique.names, outcome, covariates, grid.quantile, min.prevalence,  data, family = "gaussian"){
   len <- length(clique.names)
   if(len < 2){
     stop("Need at least two exposures to form a meaningful clique") 
@@ -248,6 +248,9 @@ clique.tba <- function(clique.names, outcome, covariates, grid.quantile, proport
     if(family == "binomial"){
       fit <- summary(glm(g.out ~ as.matrix(data[, c(beta.data$Exposure[i], covariates)]), data = data , family = family))  
     }
+    if(family == "poisson"){
+      fit <- summary(glm(g.out ~ as.matrix(data[, c(beta.data$Exposure[i], covariates)]), data = data , family = family))  
+    }
     beta.data$effect_size[i] <- fit$coefficients[2,1]
   }
   x <- grid.quantile
@@ -255,7 +258,7 @@ clique.tba <- function(clique.names, outcome, covariates, grid.quantile, proport
     stop("Please increase the number of possible thresholds")
   }
   d1 <- do.call(expand.grid, replicate(len, x, simplify = F))
-  d1$proportion <- rep(NA_real_, dim(d1)[1])
+  d1$min.prevalence <- rep(NA_real_, dim(d1)[1])
   d1$effect_size <- rep(NA_real_, dim(d1)[1])
   d1$se <- rep(NA_real_, dim(d1)[1])
   d1$pval <- rep(NA_real_, dim(d1)[1])
@@ -272,9 +275,9 @@ clique.tba <- function(clique.names, outcome, covariates, grid.quantile, proport
     
     if(sum(clique.int)!= 0){
       
-      d1$proportion[i] <- as.numeric(table(clique.int)/sum(table(clique.int)))[2]
+      d1$min.prevalence[i] <- as.numeric(table(clique.int)/sum(table(clique.int)))[2]
       
-      if(d1$proportion[i] >= proportion){
+      if(d1$min.prevalence[i] >= min.prevalence){
         
         data$clique.int <- clique.int
         g.out <- data[,outcome]
@@ -287,9 +290,9 @@ clique.tba <- function(clique.names, outcome, covariates, grid.quantile, proport
   }
   d2 <- na.omit(d1)
   if(dim(d2)[1] == 0){
-    stop("Please decrease the proportion, but keep it more than 5% for reliability")
+    stop("Please decrease the min.prevalence, but keep it more than 5% for reliability")
   }
-  d2 <- d2[d2$proportion > 0.1,]
+  d2 <- d2[d2$min.prevalence > 0.1,]
   d2 <- d2[order(abs(d2$effect_size), decreasing = T),]
   return(d2[1,])
 }
@@ -298,9 +301,15 @@ Finally, run the `function` called `clique.tba`. Below we discuss each argument 
 
 ```{}
 clique.tba(clique.names = c("Taxa.1", "Taxa.3", "Taxa.11"), outcome= "outcome", covariates = paste0("cov",seq(1,4)),
-            grid.quantile = seq(0.2, 0.8, 0.1), proportion = 0.1, family = "gaussian", data = data.simulated)
+            grid.quantile = seq(0.2, 0.8, 0.1), min.prevalence = 0.1, family = "gaussian", data = data.simulated)
 ```
-
+1. `clique.names`: a vector containing the names of most frequently occurring Taxa that form a "clique". We chose `Taxa.1`, `Taxa.3`, and `Taxa.11` based on the output from `clique.finder`.
+2. `outcome`: name of the outcome variable
+3. `covariates`: a vector containing the names of the covariates
+4. `grid.quantile`: choices of the quantiles to search for the thresholds. We removed the lower and upper 20<sup>20</sup> quantiles for stable results. 
+5. `min.prevalence`: the minimum proportion (lower bound) of the sample that has the clique. Here we chose `10%` as the lower bound of the prevalence. 
+6. `family`: choice of `glm` family of distributions
+7. `data`: name of the dataset
 
 
 ### References
