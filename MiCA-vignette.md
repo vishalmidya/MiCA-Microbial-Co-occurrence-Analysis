@@ -5,7 +5,7 @@ This article presents a step-by-step guide and intuitions to implement the MiCA 
 
 ##  Simulated Taxa data
 
-We first present simulated data on around 500 hypothetical participants with 60 simulated Taxa. The dataset, named `data.simulated.csv`, is uploaded as a part of the demonstration.
+We first present simulated data on around `500` hypothetical participants with `60` simulated Taxa. The dataset, named `data.simulated.csv`, is uploaded as a part of the demonstration.
 
 ## Required `R` packages
 
@@ -18,10 +18,45 @@ Find the instructions [here](https://github.com/sumbose/iRF/tree/master) to inst
 
 ## Creating a 3<sup>rd</sup> order microbial clique and an outcome
 
+1. Run the following chuck of functions:
+
+`require(kableExtra)`
+
+```{}
+make.SIGMA <- function(rho,dimension){
+  SIGMA = matrix(NA,dimension,dimension)
+  for(i in 1:dimension){
+    for(j in 1:dimension){
+      if(i != j){
+        a <- sign(rnorm(1,0,1))*rnorm(1,0.1, 0.01)
+        if(a>0) {SIGMA[i,j] = rho + a}
+        else if (a <0)  {SIGMA[i,j] = rho}
+      }
+      else if (i == j){
+        SIGMA[i,j] = 1
+      }
+    }
+  }
+  
+  (SIGMA + t(SIGMA))/2
+}
+```
+
+```{}
+make.X0 <- function(n, rho, p0){
+  X0 <- (mvtnorm::rmvnorm(n, mean = rep(0, nrow(make.SIGMA(rho, p0))), sigma = make.SIGMA(rho, p0)))
+}
+```
+
+2. Next, we create 4 covariates
+
+```{}
+n <- dim(sample.data.simulated)[1]
+set.seed(12456)
+covariates <- make.X0(n,0.1,4)
+```
 
 
-
-`library(kableExtra)`
 
 ## References
 
