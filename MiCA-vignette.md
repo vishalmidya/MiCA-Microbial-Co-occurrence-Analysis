@@ -22,7 +22,7 @@ Find the instructions [here](https://github.com/sumbose/iRF/tree/master) to inst
 ## Creating a 3<sup>rd</sup> order microbial clique and an outcome
 
 
-1. __Run the following chuck of functions:__
+1. __Run the following chunk of functions:__
 
 `require(mvtnorm)`
 
