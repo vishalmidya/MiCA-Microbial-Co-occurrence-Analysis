@@ -256,6 +256,12 @@ clique.tba <- function(clique.names, outcome, covariates, grid.quantile, min.pre
   if(length(grid.quantile) == 1){
     stop("Please increase the number of possible thresholds")
   }
+  if(sum(grid.quantile >= 1) != 0){
+    stop("All the values provided must be less than 1")
+  }
+  if(sum(grid.quantile <= 0) != 0){
+    stop("All the values provided must be more than 0")
+  }
   d1 <- do.call(expand.grid, replicate(len, x, simplify = F))
   d1$min.prevalence <- rep(NA_real_, dim(d1)[1])
   d1$effect_size <- rep(NA_real_, dim(d1)[1])
@@ -293,7 +299,16 @@ clique.tba <- function(clique.names, outcome, covariates, grid.quantile, min.pre
   }
   d2 <- d2[d2$min.prevalence > 0.1,]
   d2 <- d2[order(abs(d2$effect_size), decreasing = T),]
-  return(d2[1,])
+  out <- d2[1,]
+  
+  cuts <-colnames(out)[!(colnames(out) %in% c("min.prevalence", "effect_size", "se",  "pvalue" ))]
+  colnames(out)[1:length(cuts)] <- paste0(clique.names, ":Threshold")
+  for(i in 1:nrow(beta.data)){
+    if(beta.data[i,"effect_size"] < 0){
+      out[,i] <- paste0("<=", out[,i]*100,"th Percentile")
+    } else {out[,i] <- paste0(">=", out[,i]*100,"th Percentile")}
+  }
+  return(out)
 }
 ```
 Finally, run the `function` called `clique.tba`. Below we discuss each argument for this function and what they entail.
@@ -313,11 +328,11 @@ clique.tba(clique.names = c("Taxa.1", "Taxa.3", "Taxa.11"), outcome= "outcome", 
 I'm sharing below the final output from the simulated example.
 
 ```{}
-    Var1 Var2 Var3 min.prevalence effect_size         se       pvalue
-     0.5  0.5  0.5      0.1300813    1.246074 0.06482274 1.150153e-61
+  Taxa.1:Threshold   Taxa.3:Threshold  Taxa.11:Threshold min.prevalence effect_size         se       pvalue
+<= 50th Percentile >= 50th Percentile >= 50th Percentile      0.1300813    1.246074 0.06482274 1.150153e-61
 ```
 
-The `Var1`, `Var2`, and `Var3` denotes the estimated thresholds for `Taxa.1`, `Taxa.3`, and `Taxa.11`, respectively. The recovered estimated effect size is `1.2`, and the estimated prevalence of this microbial clique is almost `13%`.
+The `Taxa.1:Threshold`, `Taxa.3:Threshold`, and `Taxa.11:Threshold` denote the estimated thresholds for `Taxa.1`, `Taxa.3`, and `Taxa.11`, respectively. Therefore, this microbial clique is formed in those having (1) Taxa.1 less than 50<sup>th</sup> percentile of the sample, (2) Taxa.3 greater than 50<sup>th</sup> percentile of the sample, and lastly (3) Taxa.11 more than 50<sup>th</sup> percentile of the sample. The recovered estimated effect size is `1.2`, and the estimated prevalence of this microbial clique is almost `13%`. 
 
 ### References
 
