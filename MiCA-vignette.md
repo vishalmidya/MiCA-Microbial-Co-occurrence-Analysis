@@ -305,7 +305,7 @@ clique.tba(clique.names = c("Taxa.1", "Taxa.3", "Taxa.11"), outcome= "outcome", 
 1. `clique.names`: a vector containing the names of most frequently occurring Taxa that form a "clique". We chose `Taxa.1`, `Taxa.3`, and `Taxa.11` based on the output from `clique.finder`.
 2. `outcome`: name of the outcome variable
 3. `covariates`: a vector containing the names of the covariates
-4. `grid.quantile`: choices of the quantiles to search for the thresholds. We removed the lower and upper 20<sup>20</sup> quantiles for stable results. 
+4. `grid.quantile`: choices of the quantiles to search for the thresholds. We removed the lower and upper 20<sup>th</sup> quantiles for stable results. 
 5. `min.prevalence`: the minimum proportion (lower bound) of the sample that has the clique. Here we chose `10%` as the lower bound of the prevalence. 
 6. `family`: choice of `glm` family of distributions
 7. `data`: name of the dataset
