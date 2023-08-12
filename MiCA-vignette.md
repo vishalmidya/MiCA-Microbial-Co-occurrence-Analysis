@@ -101,6 +101,7 @@ Note that, there are a total of `1770` two-ordered, and `34220` three-ordered co
 ## Finding the optimal combination of Taxa
 
 Run the following function that finds the most frequently occurring combinations of Taxa:
+Copy this code chunk below and run it.
 
 ```{}
 require("iRF")
@@ -187,7 +188,7 @@ clique.finder <- function(exposures, outcome, iterations, validation, seed.value
 }
 ```
 
-Finally, run the `function` called `clique.finder`. Below we discuss each argument for this function and what they entail.
+Finally, run the `function` called `clique.finder`. This is the main function where you can change its arguments. Below we discuss each argument for this function and what they entail.
 
 ```{}
 clique.finder(exposures = paste0("Taxa.", seq(1,60)), outcome = "outcome",  iterations = 500, validation = 0.4, 
