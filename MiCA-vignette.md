@@ -343,3 +343,7 @@ The `Taxa.1:Threshold`, `Taxa.3:Threshold`, and `Taxa.11:Threshold` denote the e
 ### Acknowledgments
 
 This method was developed at the Dept. of Environmental Medicine and Public Health, Icahn School of Medicine at Mount Sinai, NYC, with funding and support from the National Institute of Environmental Health Sciences (K99ES032884, P30ES023515, and U2C ES026555-01).
+
+### Contact
+
+Please email Vishal Midya (vishal.midya@mssm.edu) for reporting typos, general questions, and feedbacks.  
