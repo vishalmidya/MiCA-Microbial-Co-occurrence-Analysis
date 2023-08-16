@@ -229,7 +229,7 @@ The first column, `Var1`, denotes all possible combinations picked up by the alg
 Run the following function that finds the thresholds for relative abundances of `Taxa.1`, `Taxa.3`, and `Taxa.11`. Each Taxa's directionality is chosen based on its univariate association. The following code _should only be used_ based on the output from the `clique.finder` function; otherwise, overfitting is possible. 
 
 ```{}
-clique.tba <- function(clique.names, outcome, covariates, grid.quantile, min.prevalence,  data, family = "gaussian"){
+clique.tba <- function(clique.names, outcome, covariates, grid.quantile, min.prevalence,  data, family){
   len <- length(clique.names)
   if(len < 2){
     stop("Need at least two exposures to form a meaningful clique") 
