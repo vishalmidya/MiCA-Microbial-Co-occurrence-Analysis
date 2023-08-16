@@ -347,4 +347,4 @@ This method was developed at the Dept. of Environmental Medicine and Public Heal
 
 ### Contact
 
-Please email Vishal Midya (vishal.midya@mssm.edu) for reporting typos, general questions, and feedbacks.  
+Please email Vishal Midya (vishal.midya@mssm.edu) for reporting typos, general questions, and feedback.  
