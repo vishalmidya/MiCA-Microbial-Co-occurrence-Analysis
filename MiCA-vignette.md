@@ -19,7 +19,7 @@ Kindly install the following `R` packages
 
 Find the instructions [here](https://github.com/sumbose/iRF/tree/master) to install the `iRF` package.
 
-## Creating a 3<sup>rd</sup> order microbial clique and an outcome
+## Data generating Process: creating a 3<sup>rd</sup> order microbial clique and an outcome
 
 
 1. __Run the following chunk of functions:__
