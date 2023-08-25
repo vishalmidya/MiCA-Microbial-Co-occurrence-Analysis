@@ -287,7 +287,15 @@ clique.tba <- function(clique.names, outcome, covariates, grid.quantile, min.pre
         
         data$clique.int <- clique.int
         g.out <- data[,outcome]
-        s <- summary(lm(g.out ~ as.matrix(data[, c("clique.int", covariates)]), data = data))
+       if(family == "poisson"){
+          s <- summary(glm(g.out ~ as.matrix(data[, c("clique.int")]), data = data, family = family))
+        }
+        if(family == "binomial"){
+          s <- summary(glm(g.out ~ as.matrix(data[, c("clique.int")]), data = data, family = family))
+        }
+        if(family == "gaussian"){
+          s <- summary(lm(g.out ~ as.matrix(data[, c("clique.int")]), data = data))
+        }
         d1$effect_size[i] = s$coefficients[2,1]
         d1$se[i] = s$coefficients[2,2]
         d1$pvalue[i] = s$coefficients[2,4]
