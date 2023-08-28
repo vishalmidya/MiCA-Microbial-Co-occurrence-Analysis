@@ -343,6 +343,10 @@ I'm sharing below the final output from the simulated example.
 
 The `Taxa.1:Threshold`, `Taxa.3:Threshold`, and `Taxa.11:Threshold` denote the estimated thresholds for `Taxa.1`, `Taxa.3`, and `Taxa.11`, respectively. Therefore, this microbial clique is formed in those having (1) Taxa.1 less than 50<sup>th</sup> percentile of the sample, (2) Taxa.3 greater than 50<sup>th</sup> percentile of the sample, and lastly (3) Taxa.11 more than 50<sup>th</sup> percentile of the sample. The recovered estimated effect size is `1.2`, and the estimated prevalence of this microbial clique is almost `13%`. 
 
+### Note 
+
+1. This example does not partition the dataset into `training` and `testing` sets. However, given a larger sample, it is highly recommended to use this algorithm to discover cliques in the `training` set and then test it on the `testing` set.
+
 ### References
 
 1. Basu, S.; Kumbier, K.; Brown, J. B.; Yu, B. Iterative Random Forests to Discover Predictive and Stable High-Order Interactions. Proc. Natl. Acad. Sci. 2018, 115 (8), 1943–1948.
