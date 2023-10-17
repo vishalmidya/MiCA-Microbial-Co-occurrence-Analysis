@@ -106,6 +106,7 @@ Copy this code chunk below and run it.
 ```{}
 require("iRF")
 clique.finder <- function(exposures, outcome, iterations, validation, seed.value, n.bootstrap, min.prevalence, min.stability, data){
+  data <- as.data.frame(data)
   n <- dim(data)[1]
   if(n == 0){
     stop("Provide a dataset in data.frame format") 
@@ -230,6 +231,7 @@ Run the following function that finds the thresholds for relative abundances of 
 
 ```{}
 clique.tba <- function(clique.names, outcome, covariates, grid.quantile, min.prevalence,  data, family){
+  data <- as.data.frame(data)
   len <- length(clique.names)
   if(len < 2){
     stop("Need at least two exposures to form a meaningful clique") 
