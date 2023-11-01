@@ -230,7 +230,8 @@ The first column, `Var1`, denotes all possible combinations picked up by the alg
 Run the following function that finds the thresholds for relative abundances of `Taxa.1`, `Taxa.3`, and `Taxa.11`. Each Taxa's directionality is chosen based on its univariate association with the outcome. The following code _should only be used_ based on the output from the `clique.finder` function; otherwise, overfitting is possible. 
 
 ```{}
-clique.tba <- function(clique.names, outcome, covariates, grid.quantile, min.prevalence,  data, family){
+
+clique.tba <- function(clique.names, outcome, grid.quantile, min.prevalence,  data, family){
   data <- as.data.frame(data)
   len <- length(clique.names)
   if(len < 2){
@@ -240,20 +241,27 @@ clique.tba <- function(clique.names, outcome, covariates, grid.quantile, min.pre
   if(n == 0){
     stop("Please provide a dataset in data.frame format") 
   }
-  beta.data <- data.frame(Exposure = rep(NA_character_, len), effect_size = rep(NA_real_, len))
+  beta.data <- data.frame(Exposure = rep(NA_character_, len), boot_effect_size = rep(NA_real_, len))
   beta.data$Exposure <- clique.names
   for(i in 1:len){
-    g.out <- data[,outcome]
-    if(family == "gaussian"){
-      fit <- summary(lm(g.out ~ as.matrix(data[, c(beta.data$Exposure[i], covariates)]), data = data))  
+    boot.mean <- NA_real_; bootsize = 200;
+    for(j in 1:bootsize){
+      set.seed(runif(1,0,1e5))
+      boot.data <- data[sample(1:nrow(data), 500 , replace = T),]
+      g.out <- boot.data[,outcome]
+      if(family == "gaussian"){
+        fit <- summary(lm(g.out ~ as.matrix(boot.data[, c(beta.data$Exposure[i])]), data = boot.data))  
+      }
+      if(family == "binomial"){
+        fit <- summary(glm(g.out ~ as.matrix(boot.data[, c(beta.data$Exposure[i])]), data = boot.data , family = family))  
+      }
+      if(family == "poisson"){
+        fit <- summary(glm(g.out ~ as.matrix(boot.data[, c(beta.data$Exposure[i])]), data = boot.data , family = family))  
+      }
+      
+      boot.mean <- c(boot.mean,fit$coefficients[2,1])
     }
-    if(family == "binomial"){
-      fit <- summary(glm(g.out ~ as.matrix(data[, c(beta.data$Exposure[i], covariates)]), data = data , family = family))  
-    }
-    if(family == "poisson"){
-      fit <- summary(glm(g.out ~ as.matrix(data[, c(beta.data$Exposure[i], covariates)]), data = data , family = family))  
-    }
-    beta.data$effect_size[i] <- fit$coefficients[2,1]
+    beta.data$boot_effect_size[i] <- mean(boot.mean, na.rm = T)
   }
   x <- grid.quantile
   if(length(grid.quantile) == 1){
@@ -269,11 +277,12 @@ clique.tba <- function(clique.names, outcome, covariates, grid.quantile, min.pre
   d1$min.prevalence <- rep(NA_real_, dim(d1)[1])
   d1$effect_size <- rep(NA_real_, dim(d1)[1])
   d1$se <- rep(NA_real_, dim(d1)[1])
+  d1$t.score <- rep(NA_real_, dim(d1)[1])
   d1$pvalue <- rep(NA_real_, dim(d1)[1])
   for(i in 1:nrow(d1)){
     mat.len <- as.data.frame(matrix(NA_real_, ncol = len, nrow = nrow(data)))
     for(j in 1:len){
-      if(sign(beta.data$effect_size)[j] < 0){
+      if(sign(beta.data$boot_effect_size)[j] < 0){
         mat.len[,j] <- as.numeric(data[,clique.names[j]] <= quantile(data[,clique.names[j]], d1[i,j] )) 
       }else{
         mat.len[,j] <- as.numeric(data[,clique.names[j]] >= quantile(data[,clique.names[j]], d1[i,j] ))
@@ -289,7 +298,7 @@ clique.tba <- function(clique.names, outcome, covariates, grid.quantile, min.pre
         
         data$clique.int <- clique.int
         g.out <- data[,outcome]
-       if(family == "poisson"){
+        if(family == "poisson"){
           s <- summary(glm(g.out ~ as.matrix(data[, c("clique.int")]), data = data, family = family))
         }
         if(family == "binomial"){
@@ -301,6 +310,7 @@ clique.tba <- function(clique.names, outcome, covariates, grid.quantile, min.pre
         d1$effect_size[i] = s$coefficients[2,1]
         d1$se[i] = s$coefficients[2,2]
         d1$pvalue[i] = s$coefficients[2,4]
+        d1$t.score[i] = s$coefficients[2,3]
       }
     }
   }
@@ -308,14 +318,12 @@ clique.tba <- function(clique.names, outcome, covariates, grid.quantile, min.pre
   if(dim(d2)[1] == 0){
     stop("Please decrease the min.prevalence, but keep it more than 5% for reliability")
   }
-  d2 <- d2[d2$min.prevalence > 0.1,]
   d2 <- d2[order(abs(d2$effect_size), decreasing = T),]
   out <- d2[1,]
-  
-  cuts <-colnames(out)[!(colnames(out) %in% c("min.prevalence", "effect_size", "se",  "pvalue" ))]
+  cuts <-colnames(out)[!(colnames(out) %in% c("min.prevalence", "effect_size", "se", "t.score", "pvalue" ))]
   colnames(out)[1:length(cuts)] <- paste0(clique.names, ":Threshold")
   for(i in 1:nrow(beta.data)){
-    if(beta.data[i,"effect_size"] < 0){
+    if(beta.data[i,"boot_effect_size"] < 0){
       out[,i] <- paste0("<=", out[,i]*100,"th Percentile")
     } else {out[,i] <- paste0(">=", out[,i]*100,"th Percentile")}
   }
